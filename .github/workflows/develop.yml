@@ -23,7 +23,7 @@ jobs:
           script: |
             cd /home/u723134020/domains/apis.ahmakbar.site
             git clone https://github.com/ahmakbardev/umkm_api.git
-            cd /home/u723134020/domains/edutorium.in/umkm_user
+            cd /home/u723134020/domains/edutorium.in/umkm_api
             chmod +x ~/bin/composer
             echo "export PATH=$HOME/bin:$PATH" >> ~/.bash_profile
             git pull
@@ -42,6 +42,6 @@ jobs:
             find /home/u723134020/domains/apis.ahmakbar.site/umkm_api/storage -type f -exec chmod 644 {} \;
 
             # rm -rf /home/u723134020/domains/apis.ahmakbar.site/public_html/
-            ln -s /home/u723134020/domains/apis.ahmakbar.site/umkm_api/public /home/u723134020/domains/apis.ahmakbar.site/public_html/
+            ln -s /home/u723134020/domains/apis.ahmakbar.site/umkm_api/public/* /home/u723134020/domains/apis.ahmakbar.site/public_html/
 
             
