@@ -26,7 +26,17 @@ jobs:
             cd /home/u723134020/domains/apis.ahmakbar.site/umkm_api
             chmod +x ~/bin/composer
             echo "export PATH=$HOME/bin:$PATH" >> ~/.bash_profile
-            git pull
+            echo "export PATH=$HOME/bin/node/bin:$PATH" >> ~/.bash_profile
+            source ~/.bash_profile
+            git add .
+            git stash
+            git pull origin main
+            which node
+            node -v
+            npm -v
+            npm i
+            npm install --legacy-peer-deps
+            npm run prod
             source ~/.bash_profile
             which composer
             composer --version
@@ -35,6 +45,7 @@ jobs:
             php artisan key:generate
             php artisan route:clear
             php artisan config:cache
+            php artisan storage:link
             php artisan optimize
 
              # Set permissions for storage directory
