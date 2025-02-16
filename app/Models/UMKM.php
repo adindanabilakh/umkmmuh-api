@@ -19,4 +19,9 @@ class UMKM extends Model
         'email',
         'password'
     ];
+
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'umkm_id');
+    }
 }

@@ -19,12 +19,22 @@ class UMKMController extends Controller
     // ✅ GET single UMKM
     public function show($id)
     {
-        $umkm = UMKM::find($id);
+        $umkm = UMKM::with('products')->find($id);
+
         if (!$umkm) {
             return response()->json(['message' => 'UMKM tidak ditemukan'], 404);
         }
+
+        // ✅ Format ulang gambar agar bisa diakses jika disimpan di storage
+        foreach ($umkm->products as $product) {
+            if ($product->image && !filter_var($product->image, FILTER_VALIDATE_URL)) {
+                $product->image = asset('storage/' . $product->image);
+            }
+        }
+
         return response()->json($umkm, 200);
     }
+
 
     // ✅ POST create UMKM
     public function store(Request $request)
@@ -96,6 +106,48 @@ class UMKMController extends Controller
             'umkm' => $umkm
         ], 200);
     }
+
+    // ✅ APPROVE UMKM
+    public function approveUMKM($id)
+    {
+        $umkm = UMKM::find($id);
+        if (!$umkm) {
+            return response()->json(['message' => 'UMKM tidak ditemukan'], 404);
+        }
+
+        if ($umkm->status === 'Active') {
+            return response()->json(['message' => 'UMKM sudah disetujui'], 400);
+        }
+
+        $umkm->update(['status' => 'Active']);
+
+        return response()->json([
+            'message' => 'UMKM berhasil disetujui',
+            'umkm' => $umkm
+        ], 200);
+    }
+
+    // ✅ REJECT UMKM
+    public function rejectUMKM($id)
+    {
+        $umkm = UMKM::find($id);
+        if (!$umkm) {
+            return response()->json(['message' => 'UMKM tidak ditemukan'], 404);
+        }
+
+        if ($umkm->status === 'Rejected') {
+            return response()->json(['message' => 'UMKM sudah ditolak sebelumnya'], 400);
+        }
+
+        $umkm->update(['status' => 'Rejected']);
+
+        return response()->json([
+            'message' => 'UMKM berhasil ditolak',
+            'umkm' => $umkm
+        ], 200);
+    }
+
+
     // ✅ DELETE UMKM
     public function destroy($id)
     {

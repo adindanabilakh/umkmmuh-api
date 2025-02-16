@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UMKMController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,23 +21,35 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::post('/admin/login', [AdminAuthController::class, 'login']);
-Route::middleware('auth:sanctum')->group(function () {
+Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('login');
+Route::middleware(['auth.admin'])->group(function () {
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
     Route::get('/admin/me', [AdminAuthController::class, 'me']);
-});
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/categories', [CategoryController::class, 'index']);   // Get all categories
-    Route::get('/categories/{id}', [CategoryController::class, 'show']); // Get category by ID
+    Route::post('/umkms/{id}/products', [ProductController::class, 'store']);  // 🔥 API Tambah Produk
+    Route::get('/umkms/{id}/products', [ProductController::class, 'getByUMKM']); // 🔥 API Get Produk by UMKM ID
+    Route::put('/products/{id}', [ProductController::class, 'update']);  // 🔥 API Edit Produk
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']); // 🔥 API Hapus Produk
+
     Route::post('/categories', [CategoryController::class, 'store']);   // Create new category
     Route::put('/categories/{id}', [CategoryController::class, 'update']); // Update category
     Route::delete('/categories/{id}', [CategoryController::class, 'destroy']); // Delete category
 
+    Route::post('/umkms', [UMKMController::class, 'store']);   // Create new UMKM
     Route::put('/umkms/{id}', [UMKMController::class, 'update']); // Update UMKM
     Route::delete('/umkms/{id}', [UMKMController::class, 'destroy']); // Delete UMKM
+
+    // 🔥 New: Approval & Rejection Routes
+    Route::post('/umkms/{id}/approve', [UMKMController::class, 'approveUMKM']); // ✅ Approve UMKM
+    Route::post('/umkms/{id}/reject', [UMKMController::class, 'rejectUMKM']); // ❌ Reject UMKM
+
 });
 
-Route::post('/umkms', [UMKMController::class, 'store']);   // Create new UMKM
+// Route::middleware('auth:sanctum')->group(function () {
+// });
+
+
+Route::get('/categories', [CategoryController::class, 'index']);   // Get all categories
+Route::get('/categories/{id}', [CategoryController::class, 'show']); // Get category by ID
 Route::get('/umkms', [UMKMController::class, 'index']);   // Get all UMKM
 Route::get('/umkms/{id}', [UMKMController::class, 'show']); // Get UMKM by ID
