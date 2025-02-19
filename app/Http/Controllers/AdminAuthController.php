@@ -10,6 +10,10 @@ class AdminAuthController extends Controller
 {
     public function login(Request $request)
     {
+        if (!$request->expectsJson()) {
+            return response()->json(['message' => 'Request must be JSON'], 400);
+        }
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required',
@@ -28,6 +32,7 @@ class AdminAuthController extends Controller
             'admin' => $admin
         ]);
     }
+
 
     public function logout(Request $request)
     {
