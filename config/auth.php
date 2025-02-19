@@ -51,6 +51,11 @@ return [
             'driver' => 'sanctum',
             'provider' => 'admins',
         ],
+
+        'umkm' => [ // 🔥 Guard UMKM
+            'driver' => 'sanctum',
+            'provider' => 'umkms',
+        ],
     ],
 
     /*
@@ -79,6 +84,11 @@ return [
         'admins' => [
             'driver' => 'eloquent',
             'model' => App\Models\Admin::class,
+        ],
+
+        'umkms' => [ // 🔥 Provider UMKM
+            'driver' => 'eloquent',
+            'model' => App\Models\UMKM::class,
         ],
 
         // 'users' => [

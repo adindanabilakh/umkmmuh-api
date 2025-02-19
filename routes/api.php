@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\UmkmAuthController;
 use App\Http\Controllers\UMKMController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,7 +22,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::post('/admin/login', [AdminAuthController::class, 'login'])->name('login');
+Route::post('/umkm/login', [UmkmAuthController::class, 'login']); // 🔥 Login UMKM
+Route::post('/umkm/register', [UmkmAuthController::class, 'register']); // ✅ Register UMKM
+
 Route::middleware(['auth.admin'])->group(function () {
     Route::post('/admin/logout', [AdminAuthController::class, 'logout']);
     Route::get('/admin/me', [AdminAuthController::class, 'me']);
@@ -45,8 +50,11 @@ Route::middleware(['auth.admin'])->group(function () {
 
 });
 
-// Route::middleware('auth:sanctum')->group(function () {
-// });
+
+Route::middleware(['auth.umkm'])->group(function () {
+    Route::post('/umkm/logout', [UmkmAuthController::class, 'logout']); // 🔥 Logout UMKM
+    Route::get('/umkm/me', [UmkmAuthController::class, 'me']); // 🔥 Get UMKM yang login
+});
 
 
 Route::get('/categories', [CategoryController::class, 'index']);   // Get all categories

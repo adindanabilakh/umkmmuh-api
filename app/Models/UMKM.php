@@ -4,12 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Auth\Authenticatable; // 🔥 Tambahkan ini
+use Illuminate\Auth\Authenticatable as AuthenticatableTrait; // 🔥 Tambahkan ini
+use Laravel\Sanctum\HasApiTokens;
 
-class UMKM extends Model
+class UMKM extends Model implements Authenticatable // 🔥 Pastikan ini diimplementasikan
 {
+    use HasFactory, AuthenticatableTrait, HasApiTokens; // ✅ Tambahkan HasApiTokens
 
-    use HasFactory;
     protected $table = "u_m_k_m_s";
+
     protected $fillable = [
         'name',
         'type',
@@ -17,7 +21,17 @@ class UMKM extends Model
         'address',
         'location_url',
         'email',
-        'password'
+        'password',
+        'document', // 🆕 Tambahkan kolom baru
+    ];
+
+
+    protected $hidden = [
+        'password',
+    ];
+
+    protected $casts = [
+        'password' => 'hashed', // 🔥 Laravel 10+ otomatis hashing password
     ];
 
     public function products()
