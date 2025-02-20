@@ -21,8 +21,10 @@ class UMKM extends Model implements Authenticatable // 🔥 Pastikan ini diimple
         'address',
         'location_url',
         'email',
+        'phone_number', // 🆕 Tambahkan nomor telepon
         'password',
-        'document', // 🆕 Tambahkan kolom baru
+        'document',
+        'images', // 🆕 Tambahkan kolom untuk menyimpan multi-image
     ];
 
 
@@ -31,7 +33,8 @@ class UMKM extends Model implements Authenticatable // 🔥 Pastikan ini diimple
     ];
 
     protected $casts = [
-        'password' => 'hashed', // 🔥 Laravel 10+ otomatis hashing password
+        'password' => 'hashed',
+        'images' => 'array', // 🆕 Cast images ke array agar bisa digunakan sebagai array
     ];
 
     public function products()

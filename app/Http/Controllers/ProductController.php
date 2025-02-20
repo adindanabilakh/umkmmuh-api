@@ -5,11 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\UMKM;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    // ✅ API untuk menambahkan produk berdasarkan UMKM ID
+    // ✅ API untuk menambahkan produk berdasarkan UMKM ID dengan Upload Gambar
     public function store(Request $request, $umkmId)
     {
         $umkm = UMKM::find($umkmId);
@@ -21,8 +22,7 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
-            // 'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Max 2MB
-            'image' => 'nullable|string|url',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Max 2MB
         ]);
 
         if ($validator->fails()) {
@@ -32,9 +32,7 @@ class ProductController extends Controller
         $imagePath = null;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('products', 'public');
-        } elseif ($request->image) {
-            $imagePath = $request->image; // Simpan URL langsung jika bukan file
+            $imagePath = $request->file('image')->store('products', 'public'); // Simpan ke storage
         }
 
         $product = Product::create([
@@ -42,7 +40,7 @@ class ProductController extends Controller
             'name' => $request->name,
             'description' => $request->description,
             'price' => $request->price,
-            'image' => $imagePath,
+            'image' => $imagePath ? Storage::url($imagePath) : null, // Simpan URL gambar
         ]);
 
         return response()->json([
@@ -51,7 +49,6 @@ class ProductController extends Controller
         ], 201);
     }
 
-    // ✅ API untuk mengedit produk berdasarkan ID produk
     public function update(Request $request, $productId)
     {
         $product = Product::find($productId);
@@ -59,29 +56,36 @@ class ProductController extends Controller
             return response()->json(['message' => 'Produk tidak ditemukan'], 404);
         }
 
+        // Validasi tetap berjalan
         $validator = Validator::make($request->all(), [
-            'name' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'price' => 'sometimes|required|numeric|min:0',
-            'image' => 'nullable|string|url',
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'price' => 'required|numeric|min:0',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
-        if ($request->has('name')) {
-            $product->name = $request->name;
+        // Update field lain
+        $product->name = $request->name;
+        $product->description = $request->description;
+        $product->price = $request->price;
+
+        // Jika ada gambar baru, hapus yang lama dan simpan yang baru
+        if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($product->image) {
+                $oldImagePath = str_replace('/storage/', '', $product->image);
+                Storage::disk('public')->delete($oldImagePath);
+            }
+
+            // Simpan gambar baru
+            $imagePath = $request->file('image')->store('products', 'public');
+            $product->image = Storage::url($imagePath);
         }
-        if ($request->has('description')) {
-            $product->description = $request->description;
-        }
-        if ($request->has('price')) {
-            $product->price = $request->price;
-        }
-        if ($request->has('image')) {
-            $product->image = $request->image;
-        }
+
 
         $product->save();
 
@@ -91,6 +95,7 @@ class ProductController extends Controller
         ], 200);
     }
 
+
     // ✅ API untuk menghapus produk berdasarkan ID produk
     public function destroy($productId)
     {
@@ -99,12 +104,16 @@ class ProductController extends Controller
             return response()->json(['message' => 'Produk tidak ditemukan'], 404);
         }
 
+        // Hapus gambar dari storage jika ada
+        if ($product->image) {
+            $imagePath = str_replace('/storage/', '', $product->image);
+            Storage::disk('public')->delete($imagePath);
+        }
+
         $product->delete();
 
         return response()->json(['message' => 'Produk berhasil dihapus'], 200);
     }
-
-
 
     // ✅ API untuk mendapatkan semua produk berdasarkan UMKM ID
     public function getByUMKM($umkmId)

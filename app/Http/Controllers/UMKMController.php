@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\UMKM;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class UMKMController extends Controller
@@ -84,13 +85,36 @@ class UMKMController extends Controller
             'address' => 'sometimes|required|string',
             'location_url' => 'sometimes|required|url',
             'email' => 'sometimes|required|email|unique:u_m_k_m_s,email,' . $id,
+            'phone_number' => 'sometimes|nullable|string|max:15',
             'password' => 'nullable|min:6',
+            'document' => 'nullable|file|mimes:jpeg,png,pdf|max:2048', // 🆕 Validasi document
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 🆕 Validasi multi-image
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
 
+        // Debugging: Cek apakah file diterima
+        Log::info('Document:', [$request->file('document')]);
+        Log::info('Images:', [$request->file('images')]);
+
+        // Simpan document jika ada
+        if ($request->hasFile('document')) {
+            $documentPath = $request->file('document')->store('umkm_documents', 'public');
+            $umkm->document = $documentPath;
+        }
+
+        // Simpan multi images jika ada
+        if ($request->hasFile('images')) {
+            $imagePaths = [];
+            foreach ($request->file('images') as $image) {
+                $imagePaths[] = $image->store('umkm_images', 'public');
+            }
+            $umkm->images = json_encode($imagePaths);
+        }
+
+        // Update data UMKM
         $umkm->update([
             'name' => $request->name ?? $umkm->name,
             'type' => $request->type ?? $umkm->type,
@@ -98,6 +122,7 @@ class UMKMController extends Controller
             'address' => $request->address ?? $umkm->address,
             'location_url' => $request->location_url ?? $umkm->location_url,
             'email' => $request->email ?? $umkm->email,
+            'phone_number' => $request->phone_number ?? $umkm->phone_number,
             'password' => $request->password ? Hash::make($request->password) : $umkm->password,
         ]);
 
@@ -106,6 +131,9 @@ class UMKMController extends Controller
             'umkm' => $umkm
         ], 200);
     }
+
+
+
 
     // ✅ APPROVE UMKM
     public function approveUMKM($id)

@@ -54,6 +54,14 @@ Route::middleware(['auth.admin'])->group(function () {
 Route::middleware(['auth.umkm'])->group(function () {
     Route::post('/umkm/logout', [UmkmAuthController::class, 'logout']); // 🔥 Logout UMKM
     Route::get('/umkm/me', [UmkmAuthController::class, 'me']); // 🔥 Get UMKM yang login
+
+    Route::put('/umkms/{id}', [UMKMController::class, 'update']); // Update UMKM
+
+    Route::post('/umkms/{id}/products', [ProductController::class, 'store']);  // 🔥 API Tambah Produk
+    Route::get('/umkms/{id}/products', [ProductController::class, 'getByUMKM']); // 🔥 API Get Produk by UMKM ID
+    Route::put('/products/{id}', [ProductController::class, 'update']);  // 🔥 API Edit Produk
+    Route::delete('/products/{id}', [ProductController::class, 'destroy']); // 🔥 API Hapus Produk
+
 });
 
 

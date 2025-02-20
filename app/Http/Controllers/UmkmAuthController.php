@@ -90,12 +90,13 @@ class UmkmAuthController extends Controller
 
     public function me(Request $request)
     {
-        $umkm = UMKM::find(auth('sanctum')->id()); // 🔥 Pastikan ambil dari auth sanctum
-
+        // 🔥 Jika UMKM terkait user_id, sesuaikan dengan database
+        $umkm = UMKM::find(auth('sanctum')->id());
+    
         if (!$umkm) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-
+    
         return response()->json([
             'id' => $umkm->id,
             'name' => $umkm->name,
@@ -104,8 +105,12 @@ class UmkmAuthController extends Controller
             'address' => $umkm->address,
             'location_url' => $umkm->location_url,
             'email' => $umkm->email,
+            'phone_number' => $umkm->phone_number, // ✅ Tambahkan
+            'document' => $umkm->document ? asset('storage/' . $umkm->document) : null, // ✅ Pastikan URL bisa diakses
+            'images' => $umkm->images ? json_decode($umkm->images) : [], // ✅ Decode JSON jika ada
             'created_at' => $umkm->created_at,
             'updated_at' => $umkm->updated_at,
         ]);
     }
+    
 }
