@@ -83,7 +83,7 @@ class UMKMController extends Controller
             'type' => 'sometimes|required|string',
             'status' => 'sometimes|required|in:Active,Pending,Inactive',
             'address' => 'sometimes|required|string',
-            'location_url' => 'sometimes|required|url',
+            'location_url' => 'sometimes|required|string',
             'email' => 'sometimes|required|email|unique:u_m_k_m_s,email,' . $id,
             'phone_number' => 'sometimes|nullable|string|max:15',
             'password' => 'nullable|min:6',
