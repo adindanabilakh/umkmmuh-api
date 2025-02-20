@@ -19,8 +19,3 @@ Route::get('/', function () {
 Route::get('/detail', function () {
     return view('detail');
 })->name('detail');
-
-Route::get('/generate', function(){
-    \Illuminate\Support\Facades\Artisan::call('storage:link');
-    echo 'ok';
- });
