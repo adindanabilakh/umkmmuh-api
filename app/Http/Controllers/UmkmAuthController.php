@@ -92,11 +92,11 @@ class UmkmAuthController extends Controller
     {
         // 🔥 Jika UMKM terkait user_id, sesuaikan dengan database
         $umkm = UMKM::find(auth('sanctum')->id());
-    
+
         if (!$umkm) {
             return response()->json(['message' => 'Unauthorized'], 401);
         }
-    
+
         return response()->json([
             'id' => $umkm->id,
             'name' => $umkm->name,
@@ -109,9 +109,10 @@ class UmkmAuthController extends Controller
             'phone_number' => $umkm->phone_number, // ✅ Tambahkan
             'document' => $umkm->document ? asset('storage/' . $umkm->document) : null, // ✅ Pastikan URL bisa diakses
             'images' => $umkm->images ? json_decode($umkm->images) : [], // ✅ Decode JSON jika ada
+            'open_time' => $umkm->open_time, // ✅ Tambahkan ke response
+            'close_time' => $umkm->close_time, // ✅ Tambahkan ke response
             'created_at' => $umkm->created_at,
             'updated_at' => $umkm->updated_at,
         ]);
     }
-    
 }

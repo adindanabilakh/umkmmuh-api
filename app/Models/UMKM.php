@@ -26,6 +26,8 @@ class UMKM extends Model implements Authenticatable // 🔥 Pastikan ini diimple
         'document',
         'images',
         'description', // 🔥 Tambahkan kolom description
+        'open_time',
+        'close_time',
     ];
 
 

@@ -49,6 +49,8 @@ class UMKMController extends Controller
             'email' => 'required|email|unique:u_m_k_m_s',
             'password' => 'required|min:6',
             'description' => 'nullable|string', // 🔥 Tambahkan description opsional
+            'open_time' => 'nullable|date_format:H:i', // ✅ Validasi jam buka
+            'close_time' => 'nullable|date_format:H:i|after:open_time', // ✅ Validasi jam tutup harus setelah jam buka
         ]);
 
 
@@ -65,6 +67,8 @@ class UMKMController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'description' => $request->description, // 🔥 Simpan description jika ada
+            'open_time' => $request->open_time,
+            'close_time' => $request->close_time,
         ]);
 
 
@@ -94,6 +98,8 @@ class UMKMController extends Controller
             'document' => 'nullable|file|mimes:jpeg,png,pdf|max:2048', // 🆕 Validasi document
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 🆕 Validasi multi-image
             'description' => 'nullable|string', // 🔥 Tambahkan description opsional
+            'open_time' => 'nullable|date_format:H:i',
+            'close_time' => 'nullable|date_format:H:i|after:open_time',
         ]);
 
         if ($validator->fails()) {
@@ -130,6 +136,8 @@ class UMKMController extends Controller
             'phone_number' => $request->phone_number ?? $umkm->phone_number,
             'password' => $request->password ? Hash::make($request->password) : $umkm->password,
             'description' => $request->description ?? $umkm->description, // 🔥 Update description jika ada
+            'open_time' => $request->open_time ?? $umkm->open_time,
+            'close_time' => $request->close_time ?? $umkm->close_time,
         ]);
 
         return response()->json([
