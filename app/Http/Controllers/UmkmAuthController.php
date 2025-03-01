@@ -102,6 +102,7 @@ class UmkmAuthController extends Controller
             'name' => $umkm->name,
             'type' => $umkm->type,
             'status' => $umkm->status,
+            'description' => $umkm->description,
             'address' => $umkm->address,
             'location_url' => $umkm->location_url,
             'email' => $umkm->email,

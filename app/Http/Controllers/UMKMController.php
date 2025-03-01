@@ -48,7 +48,9 @@ class UMKMController extends Controller
             'location_url' => 'required|url',
             'email' => 'required|email|unique:u_m_k_m_s',
             'password' => 'required|min:6',
+            'description' => 'nullable|string', // 🔥 Tambahkan description opsional
         ]);
+
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
@@ -62,7 +64,9 @@ class UMKMController extends Controller
             'location_url' => $request->location_url,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'description' => $request->description, // 🔥 Simpan description jika ada
         ]);
+
 
         return response()->json([
             'message' => 'UMKM berhasil ditambahkan',
@@ -89,6 +93,7 @@ class UMKMController extends Controller
             'password' => 'nullable|min:6',
             'document' => 'nullable|file|mimes:jpeg,png,pdf|max:2048', // 🆕 Validasi document
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // 🆕 Validasi multi-image
+            'description' => 'nullable|string', // 🔥 Tambahkan description opsional
         ]);
 
         if ($validator->fails()) {
@@ -124,6 +129,7 @@ class UMKMController extends Controller
             'email' => $request->email ?? $umkm->email,
             'phone_number' => $request->phone_number ?? $umkm->phone_number,
             'password' => $request->password ? Hash::make($request->password) : $umkm->password,
+            'description' => $request->description ?? $umkm->description, // 🔥 Update description jika ada
         ]);
 
         return response()->json([

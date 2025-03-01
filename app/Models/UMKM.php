@@ -21,11 +21,13 @@ class UMKM extends Model implements Authenticatable // 🔥 Pastikan ini diimple
         'address',
         'location_url',
         'email',
-        'phone_number', // 🆕 Tambahkan nomor telepon
+        'phone_number',
         'password',
         'document',
-        'images', // 🆕 Tambahkan kolom untuk menyimpan multi-image
+        'images',
+        'description', // 🔥 Tambahkan kolom description
     ];
+
 
 
     protected $hidden = [
