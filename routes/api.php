@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\IncomeController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\UmkmAuthController;
 use App\Http\Controllers\UMKMController;
@@ -61,7 +62,12 @@ Route::middleware(['auth.umkm'])->group(function () {
     Route::get('/umkms/{id}/products', [ProductController::class, 'getByUMKM']); // 🔥 API Get Produk by UMKM ID
     Route::put('/products/{id}', [ProductController::class, 'update']);  // 🔥 API Edit Produk
     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // 🔥 API Hapus Produk
-
+    
+    Route::get('/incomes', [IncomeController::class, 'index']);
+    Route::post('/incomes', [IncomeController::class, 'store']);
+    Route::get('/incomes/{income}', [IncomeController::class, 'show']);
+    Route::put('/incomes/{income}', [IncomeController::class, 'update']);
+    Route::delete('/incomes/{income}', [IncomeController::class, 'destroy']);
 });
 
 

@@ -1,0 +1,103 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\IncomeRequest;
+use App\Models\Income;
+use Illuminate\Http\Request;
+
+class IncomeController extends Controller
+{
+    public function index(Request $request)
+    {
+        $umkm = auth()->guard('umkm')->user(); // Gunakan guard 'umkm'
+
+        if (!$umkm) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $incomes = Income::where('umkm_id', $umkm->id)->latest()->get();
+
+        if ($incomes->isEmpty()) {
+            return response()->json(['message' => 'No income records found'], 404);
+        }
+
+        return response()->json($incomes);
+    }
+
+    public function store(IncomeRequest $request)
+    {
+        $umkm = auth()->guard('umkm')->user();
+
+        if (!$umkm) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $validatedData = $request->validated();
+        $validatedData['date'] = $validatedData['date'] . '-01'; // 🔥 Tambahkan "-01" untuk memastikan format "YYYY-MM-DD"
+
+        $income = Income::create($validatedData + ['umkm_id' => $umkm->id]);
+
+        return response()->json(['message' => 'Income added successfully', 'income' => $income], 201);
+    }
+
+
+    public function show($id, Request $request)
+    {
+        $umkm = auth()->guard('umkm')->user();
+
+        if (!$umkm) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $income = Income::where('id', $id)->where('umkm_id', $umkm->id)->first();
+
+        if (!$income) {
+            return response()->json(['message' => 'Income not found'], 404);
+        }
+
+        return response()->json($income);
+    }
+
+    public function update(IncomeRequest $request, $id)
+    {
+        $umkm = auth()->guard('umkm')->user();
+
+        if (!$umkm) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $income = Income::where('id', $id)->where('umkm_id', $umkm->id)->first();
+
+        if (!$income) {
+            return response()->json(['message' => 'Income not found'], 404);
+        }
+
+        $validatedData = $request->validated();
+        $validatedData['date'] = $validatedData['date'] . '-01'; // 🔥 Pastikan format "YYYY-MM-DD"
+
+        $income->update($validatedData);
+
+        return response()->json(['message' => 'Income updated successfully', 'income' => $income]);
+    }
+
+
+    public function destroy($id, Request $request)
+    {
+        $umkm = auth()->guard('umkm')->user();
+
+        if (!$umkm) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $income = Income::where('id', $id)->where('umkm_id', $umkm->id)->first();
+
+        if (!$income) {
+            return response()->json(['message' => 'Income not found'], 404);
+        }
+
+        $income->delete();
+
+        return response()->json(['message' => 'Income deleted successfully']);
+    }
+}
