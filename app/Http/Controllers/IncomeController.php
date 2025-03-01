@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\IncomeRequest;
 use App\Models\Income;
+use App\Models\UMKM;
 use Illuminate\Http\Request;
 
 class IncomeController extends Controller
@@ -99,5 +100,30 @@ class IncomeController extends Controller
         $income->delete();
 
         return response()->json(['message' => 'Income deleted successfully']);
+    }
+
+    // ✅ GET Income by UMKM ID
+    public function getIncomeByUMKM($umkm_id)
+    {
+        $umkm = UMKM::find($umkm_id);
+
+        if (!$umkm) {
+            return response()->json(['message' => 'UMKM tidak ditemukan'], 404);
+        }
+
+        $income = Income::where('umkm_id', $umkm_id)->get();
+
+        if ($income->isEmpty()) {
+            return response()->json(['message' => 'Tidak ada data income untuk UMKM ini'], 404);
+        }
+
+        return response()->json([
+            'umkm' => [
+                'id' => $umkm->id,
+                'name' => $umkm->name,
+                'email' => $umkm->email,
+            ],
+            'income' => $income
+        ], 200);
     }
 }

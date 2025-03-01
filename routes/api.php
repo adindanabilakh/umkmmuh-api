@@ -49,6 +49,7 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::post('/umkms/{id}/approve', [UMKMController::class, 'approveUMKM']); // ✅ Approve UMKM
     Route::post('/umkms/{id}/reject', [UMKMController::class, 'rejectUMKM']); // ❌ Reject UMKM
 
+    Route::get('/umkms/{id}/income', [IncomeController::class, 'getIncomeByUMKM']);
 });
 
 
@@ -62,7 +63,7 @@ Route::middleware(['auth.umkm'])->group(function () {
     Route::get('/umkms/{id}/products', [ProductController::class, 'getByUMKM']); // 🔥 API Get Produk by UMKM ID
     Route::put('/products/{id}', [ProductController::class, 'update']);  // 🔥 API Edit Produk
     Route::delete('/products/{id}', [ProductController::class, 'destroy']); // 🔥 API Hapus Produk
-    
+
     Route::get('/incomes', [IncomeController::class, 'index']);
     Route::post('/incomes', [IncomeController::class, 'store']);
     Route::get('/incomes/{income}', [IncomeController::class, 'show']);
